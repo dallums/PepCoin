@@ -35,10 +35,38 @@ class Blockchain{
         newBlock.hash = newBlock.calculateHash();
         this.chain.push(newBlock);
     }
+
+    isChainValid(){
+        for(let i = 1; i < this.chain.length; i++){
+            const currentBlock = this.chain[i];
+            const previousBlock = this.chain[i - 1];
+
+            // re-calculating the hash to make sure it's what it presently is
+            if(currentBlock.hash != currentBlock.calculateHash()){
+                return false;
+            }
+
+            if(currentBlock.previousHash !== previousBlock.hash){
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 let pepcoin = new Blockchain();
 pepcoin.addBlock(new Block(1, "10/01/2020", { amount: 4 }));
 pepcoin.addBlock(new Block(2, "11/01/2020", { amount: 6 }));
 
-console.log(JSON.stringify(pepcoin, null, 4));
+console.log('Is blockchain valid? ' + pepcoin.isChainValid());
+
+// changing block 2 to test
+pepcoin.chain[1].data = { amount: 100 };
+console.log('Is blockchain valid? ' + pepcoin.isChainValid());
+
+// what if we re-compute the hash?
+pepcoin.chain[1].calculateHash()
+console.log('Is blockchain valid? ' + pepcoin.isChainValid());
+
+//console.log(JSON.stringify(pepcoin, null, 4));
